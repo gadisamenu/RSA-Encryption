@@ -23,29 +23,48 @@ class Rsa:
         self.privateKey = number
         break
 
-
   def encrypt(self,message):
     ascii_values = []
+    char_sequence = []
+
+    for index,char in enumerate(message):
+      if not (ord(char) in ascii_values):
+        ascii_values.append(ord(char))
+      char_sequence.append(ascii_values.index(ord(char)))
+  
     print('\n')
-    for character in message:
-      ascii_values.append(ord(character))
 
     cipherNumList = []
+
     for index,ascii in enumerate(ascii_values):
       cipherNumList.append(pow(ascii,self.publicKey,self.modulus))
- 
-    return cipherNumList
+    
+    return str(cipherNumList)+'\n'+str(char_sequence)
 
-  def decrypt(self,cipherNumList):
+  def decrypt(self,formattedCipherText):
+    formattedCipherText = formattedCipherText.replace(']','',2)
+    formattedCipherText = formattedCipherText.replace('[','',2)
+
+    end = formattedCipherText.find('\n')
+    cipherNumList = formattedCipherText [:end]
+    charSequence = formattedCipherText[end+1:]
+
+    cipherNumList = list(cipherNumList.split(','))
+    cipherNumList = list(map(int,cipherNumList))
+
+    charSequence = list(charSequence.split(','))
+    charSequence = list(map(int,charSequence))
+  
     decryptedAscii_list = []
+
+    print('\n')
     for index,ascii in enumerate(cipherNumList):
       decryptedAscii_list.append(pow(ascii,self.privateKey,self.modulus))
-      
-
+  
     actualText = ''
-    for decrypted_ascii in decryptedAscii_list:
-      actualText += chr(decrypted_ascii)
-    
+    for asciiValue in charSequence:
+      actualText += chr(decryptedAscii_list[asciiValue])
+
     return actualText
 
   def fermat_primality_test(self,number):
