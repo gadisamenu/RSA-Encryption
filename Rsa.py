@@ -1,12 +1,25 @@
 import random
 
-class Rsa:
-  BIT_SIZE = 100
 
+
+class Rsa:
+  BIT_SIZE = 1024
   def __init__(self):
-  
-    self.firstPrime = self.generatePrime()
-    self.secondPrime = self.generatePrime()
+    self.firstPrime = 0
+    self.secondPrime = 0
+    self.publicKey = 0
+    self.privateKey = 0
+    self.modulus = 1
+
+  def initialize(self):
+    
+    with open("rsaEncryption.rsa",'r') as file:
+        if file.read() == '':
+          self.generateKeys()
+        else:
+          file.seek(0)
+          self.firstPrime = int(file.readline())
+          self.secondPrime = int(file.readline())
 
     self.modulus = self.firstPrime * self.secondPrime
 
@@ -17,18 +30,20 @@ class Rsa:
         self.publicKey = number
         break
       
-    self.privateKey = self.modularInverse(self.publicKey,phi)
-  
-  
-  def modularInverse(phi,e,s0=1,s1=0,t0=0,t1=1):
-    if phi % e == 0:
-      return t1
-    else:
-      q=phi//e
-      s=s0 - q*s1
-      t=t0 - q*t1
-      return Rsa.modularInverse(e,phi%e,s1,s,t1,t)
+    for number in range(phi,1,-1):
+      if (self.publicKey * number) % phi == 1:
+        self.privateKey = number
+        break
 
+  def generateKeys(self):
+      self.firstPrime = self.generatePrime()
+      self.secondPrime = self.generatePrime()
+      
+      with open("rsaEncryption.rsa",'w') as file:
+        file.write(str(self.firstPrime)+'\n')
+        file.write(str(self.secondPrime))
+
+      self.initialize()
 
   def encrypt(self,message):
     ascii_values = []
@@ -54,6 +69,7 @@ class Rsa:
       print('\tEncrypting...'+backSpace*j,'   ','\tProgress ->',"{0:.2f}".format(completed),'%',end = '\r')
       cipherNumList.append(pow(ascii,self.publicKey,self.modulus))
     
+    print('****************** Done!...Data Encrypted! *********************')
     return str(cipherNumList)+'\n'+str(char_sequence)
 
   def decrypt(self,formattedCipherText):
@@ -84,7 +100,7 @@ class Rsa:
       print('\tDecrypting...'+backSpace*j,'   ','\tProgress ->',"{0:.2f}".format(completed),'%', end = '\r')
       decryptedAscii_list.append(pow(ascii,self.privateKey,self.modulus))
 
-    print('****************** Done!...Data Decrypted! *********************')
+    #print('****************** Done!...Data Decrypted! *********************')
     actualText = ''
     for asciiValue in charSequence:
       actualText += chr(decryptedAscii_list[asciiValue])
