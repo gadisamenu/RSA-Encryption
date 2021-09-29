@@ -1,4 +1,4 @@
-from rsaEncryption import *
+from Rsa import *
 
 print('************** 1024 bit RSA Encryption for Text files only **************\n')
 
