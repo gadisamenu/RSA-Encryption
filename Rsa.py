@@ -1,11 +1,10 @@
 import random
 
-
-
 class Rsa:
   BIT_SIZE = 100
-  
+
   def __init__(self):
+  
     self.firstPrime = self.generatePrime()
     self.secondPrime = self.generatePrime()
 
@@ -18,10 +17,18 @@ class Rsa:
         self.publicKey = number
         break
       
-    for number in range(phi,1,-1):
-      if (self.publicKey * number) % phi == 1:
-        self.privateKey = number
-        break
+    self.privateKey = self.modularInverse(self.publicKey,phi)
+  
+  
+  def modularInverse(phi,e,s0=1,s1=0,t0=0,t1=1):
+    if phi % e == 0:
+      return t1
+    else:
+      q=phi//e
+      s=s0 - q*s1
+      t=t0 - q*t1
+      return Rsa.modularInverse(e,phi%e,s1,s,t1,t)
+
 
   def encrypt(self,message):
     ascii_values = []
@@ -35,8 +42,16 @@ class Rsa:
     print('\n')
 
     cipherNumList = []
-
+    j = 3
     for index,ascii in enumerate(ascii_values):
+      if index % 10 == 0:
+        j-=1
+      backSpace = '\b'
+      if j < 0:
+        j = 2
+    
+      completed = 100 * index/len(ascii_values)
+      print('\tEncrypting...'+backSpace*j,'   ','\tProgress ->',"{0:.2f}".format(completed),'%',end = '\r')
       cipherNumList.append(pow(ascii,self.publicKey,self.modulus))
     
     return str(cipherNumList)+'\n'+str(char_sequence)
@@ -58,9 +73,18 @@ class Rsa:
     decryptedAscii_list = []
 
     print('\n')
+    j = 3
     for index,ascii in enumerate(cipherNumList):
+      if index % 10 == 0:
+        j-=1
+      backSpace = '\b'
+      if j < 0:
+        j = 2
+      completed = 100 * index/len(cipherNumList)
+      print('\tDecrypting...'+backSpace*j,'   ','\tProgress ->',"{0:.2f}".format(completed),'%', end = '\r')
       decryptedAscii_list.append(pow(ascii,self.privateKey,self.modulus))
-  
+
+    print('****************** Done!...Data Decrypted! *********************')
     actualText = ''
     for asciiValue in charSequence:
       actualText += chr(decryptedAscii_list[asciiValue])
