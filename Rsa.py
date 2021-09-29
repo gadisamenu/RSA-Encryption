@@ -52,8 +52,8 @@ class Rsa:
     testLock = Rsa.modularInverse(phi, key)
     lock = testLock + phi if testLock < 0 else testLock
 
-    Rsa.publicLock = lock 
-    Rsa.privateKey = key
+    Rsa.publicLock = key 
+    Rsa.privateKey = lock
     Rsa.modulus = modulus
 
     Rsa.state = rsaState.READY
