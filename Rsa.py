@@ -1,51 +1,115 @@
-import random
+import random,enum
 
+def gcd(a,b):
+  if b == 0:
+    return a
+  else:
+    return gcd(b,a%b)
 
+            
+class rsaState(enum.Enum):
+  READY = 0
+  INVALID_STATE = 1
 
 class Rsa:
+  state = rsaState.INVALID_STATE
   BIT_SIZE = 1024
-  def __init__(self):
-    self.firstPrime = 0
-    self.secondPrime = 0
-    self.publicKey = 0
-    self.privateKey = 0
-    self.modulus = 1
+  firstPrime = 0
+  secondPrime = 0
+  publicLock = 0
+  privateKey = 0
+  modulus = 0
 
-  def initialize(self):
-    
-    with open("rsaEncryption.rsa",'r') as file:
-        if file.read() == '':
-          self.generateKeys()
-        else:
-          file.seek(0)
-          self.firstPrime = int(file.readline())
-          self.secondPrime = int(file.readline())
+  @staticmethod
+  def initialize():
+    try:
+      file = open('encryptionInfo.rsa','r')
+    except FileNotFoundError as fnot:
+      print("Initialization Failed!",fnot)
+      return False
 
-    self.modulus = self.firstPrime * self.secondPrime
+    if file.read() == '':
+      Rsa.generateNewKey()
+    file.seek(0)
 
-    phi = (self.firstPrime-1) * (self.secondPrime-1)
+    try:
+      Rsa.firstPrime = int(file.readline())
+      Rsa.secondPrime = int(file.readline())
+    except:
+      print('Invalid Encryption Resource!'+file.name)
+      return False
 
-    for number in range(phi,1,-1):
-      if self.gcd(phi,number) == 1:
-        self.publicKey = number
+    modulus = Rsa.firstPrime * Rsa.secondPrime
+
+    phi = (Rsa.firstPrime-1) * (Rsa.secondPrime-1)
+
+    key = 0
+    for i in range(modulus,1,-1):
+      if gcd(i, phi)==1:
+        key = i
         break
-      
-    for number in range(phi,1,-1):
-      if (self.publicKey * number) % phi == 1:
-        self.privateKey = number
-        break
+        
+    testLock = Rsa.modularInverse(phi, key)
+    lock = testLock + phi if testLock < 0 else testLock
 
-  def generateKeys(self):
-      self.firstPrime = self.generatePrime()
-      self.secondPrime = self.generatePrime()
-      
-      with open("rsaEncryption.rsa",'w') as file:
-        file.write(str(self.firstPrime)+'\n')
-        file.write(str(self.secondPrime))
+    Rsa.publicLock = lock 
+    Rsa.privateKey = key
+    Rsa.modulus = modulus
 
-      self.initialize()
+    Rsa.state = rsaState.READY
+    return True
 
-  def encrypt(self,message):
+
+  @staticmethod
+  def generateNewKey():
+    Rsa.firstPrime = Rsa._generatePrime()
+    Rsa.secondPrime = Rsa._generatePrime()
+    try:
+      file = open('encryptionInfo.rsa','w')
+      file.write(str(Rsa.firstPrime)+'\n')
+      file.write(str(Rsa.secondPrime)+'\n')
+    except FileNotFoundError:
+      pass
+    except ValueError:
+      raise InvalidPrimeNumberFormat
+    file.close()
+
+    Rsa.initialize()
+
+
+  @staticmethod
+  def _isPrime(number):
+    if number % 2 == 0:
+      return False
+
+    a=random.randrange(1,number)
+    if pow(a,number,number) == pow(a,1,number):
+      return True
+    return False
+  
+  @staticmethod
+  def _generatePrime():
+    while True:
+      primeCandidate = random.randrange(pow(2,Rsa.BIT_SIZE),pow(2,Rsa.BIT_SIZE+1))
+      if Rsa._isPrime(primeCandidate):
+        return primeCandidate
+
+  @staticmethod
+  def modularInverse(phi,e,s0=1,s1=0,t0=0,t1=1):
+    if phi % e == 0:
+      return t1
+    else:
+      q=phi//e
+      s=s0 - q*s1
+      t=t0 - q*t1
+      return Rsa.modularInverse(e,phi%e,s1,s,t1,t)
+
+  @staticmethod
+  def encrypt(message):
+    if Rsa.state == rsaState.INVALID_STATE:
+      print("RSA is not initialized!")
+      return
+     
     ascii_values = []
     char_sequence = []
 
@@ -67,25 +131,33 @@ class Rsa:
     
       completed = 100 * index/len(ascii_values)
       print('\tEncrypting...'+backSpace*j,'   ','\tProgress ->',"{0:.2f}".format(completed),'%',end = '\r')
-      cipherNumList.append(pow(ascii,self.publicKey,self.modulus))
-    
+      cipherNumList.append(pow(ascii,Rsa.publicLock,Rsa.modulus))
+      
     print('****************** Done!...Data Encrypted! *********************')
     return str(cipherNumList)+'\n'+str(char_sequence)
-
-  def decrypt(self,formattedCipherText):
+  
+  @staticmethod
+  def decrypt(formattedCipherText):
+    if Rsa.state == rsaState.INVALID_STATE:
+      print("RSA is not initialized!")
+      return
+  
     formattedCipherText = formattedCipherText.replace(']','',2)
     formattedCipherText = formattedCipherText.replace('[','',2)
 
     end = formattedCipherText.find('\n')
     cipherNumList = formattedCipherText [:end]
     charSequence = formattedCipherText[end+1:]
+    try:
 
-    cipherNumList = list(cipherNumList.split(','))
-    cipherNumList = list(map(int,cipherNumList))
+      cipherNumList = list(cipherNumList.split(','))
+      cipherNumList = list(map(int,cipherNumList))
 
-    charSequence = list(charSequence.split(','))
-    charSequence = list(map(int,charSequence))
-  
+      charSequence = list(charSequence.split(','))
+      charSequence = list(map(int,charSequence))
+    except ValueError:
+      raise InvalidEncryptionFormat
+
     decryptedAscii_list = []
 
     print('\n')
@@ -98,35 +170,30 @@ class Rsa:
         j = 2
       completed = 100 * index/len(cipherNumList)
       print('\tDecrypting...'+backSpace*j,'   ','\tProgress ->',"{0:.2f}".format(completed),'%', end = '\r')
-      decryptedAscii_list.append(pow(ascii,self.privateKey,self.modulus))
+      decryptedAscii_list.append(pow(ascii,Rsa.privateKey,Rsa.modulus))
 
-    #print('****************** Done!...Data Decrypted! *********************')
-    actualText = ''
-    for asciiValue in charSequence:
-      actualText += chr(decryptedAscii_list[asciiValue])
-
+    print('****************** Done!...Data Decrypted! *********************')
+    try:
+      actualText = ''
+      for asciiValue in charSequence:
+        actualText += chr(decryptedAscii_list[asciiValue])
+    except ValueError:
+      raise KeyMisMatch
+    except OverflowError as e:
+      print('Overflow',e)
     return actualText
-
-  def fermat_primality_test(self,number):
-
-    if number % 2 == 0:
-      return False
-
-    evenComponent=number-1
-    a=random.randrange(1,number)
-    if pow(a,evenComponent,number) == 1:
-      return True
-    return False
   
   
-  def generatePrime(self):
-    while True:
-      primeCandidate = random.randrange(pow(2,Rsa.BIT_SIZE),pow(2,Rsa.BIT_SIZE+1))
-      if self.fermat_primality_test(primeCandidate):
-        return primeCandidate
   
-  def gcd(self,a,b):
-    if b == 0:
-      return a
-    else:
-      return self.gcd(b,a%b)
+
+class EmptyFile(Exception):
+  pass
+
+class InvalidEncryptionFormat(Exception):
+  pass
+
+class KeyMisMatch(Exception):
+  pass
+
+class InvalidPrimeNumberFormat(Exception):
+  pass

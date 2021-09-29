@@ -1,0 +1,130 @@
+
+1
+Home
+Following
+Answer
+Spaces
+Notifications
+Search Quora
+Profile photo for Amha Kindu
+Matrix Computations
+Matrices (mathematics)
+Proofs (mathematics)
+Linear Algebra
+Algebra
+Linear Algebra: How do I prove that if a matrix squared equals itself, its determinant equals either 1 or 0?
+Ad by Chegg Study®
+Study time, crunch time, anytime.
+Access over 55 million Textbook Solutions and Expert Q&A, plus step-by-step walk-throughs.
+5 Answers
+Profile photo for Barak Shoshany
+Barak Shoshany
+, Assistant Professor of Physics at Brock University
+Answered March 11, 2014 · Upvoted by 
+Justin Rising
+, PhD in statistics and 
+Ricky Kwok
+, Ph.D. in Applied Math from UC Davis
+Originally Answered: How do I prove that if a matrix squared equals itself, it equals either 1 or 0?
+Original question was "How do I prove that if a matrix squared equals itself, it equals either 1 or 0?", and my answer was:
+
+You can't prove it, because it isn't true. Here's a counterexample:
+(12121212)2=(12121212)
+
+After the OP said he meant the determinant, my answer was changed to:
+
+Let |A| be the determinant of the matrix A. Then since products of determinants obey the relation |AB|=|A||B|, we have:
+A2=A\Rightarr… 
+More
+2 comments from 
+Anonymous
+ and more
+Sponsored by Jira Software, Atlassian
+How do Airbnb, Cisco and Spotify ship software early and often?
+Plan, track work, and release great software with Jira. Start your free trial today.
+Profile photo for Jay Wacker
+Jay Wacker
+, uses linear algebra frequently
+Answered February 28, 2019
+There is a theorem that is more-or-less proven in Joseph Triscari's answer that the spectrum (meaning the set of possible) of eigenvalues of an operator are the roots of the simplest polynomial equation that the operator satisfies.
+
+In this case you have P^2 = P. The roots to this polynomial equation are 0 and 1. This means that the only possible eigenvalues of this operator are 0 or 1.
+
+The determinant is the product of eigenvalues. So the possible determinants all the possible products of 0 and 1. This turns out to be very easy in this case: 1 if all the entries are 1 or 0 if any one of the eige… 
+More
+2 comments from 
+Juspreet-Singh Sandhu
+ and more
+Profile photo for Joseph Triscari
+Joseph Triscari
+, Ph.D. from University of Arizona (2000)
+Answered February 23, 2019
+If P2=P and u is an eigenvector with associated eigenvalue, λ, then λu=Pu=P2u=λ2u. Soλ2=λ. This means all the eigenvalues are either 1 or 0. The determinant of a matrix is equal to the product of its eigenvalues, so the determinant is 1 or 0.
+
+944 viewsView 5 upvotes
+2 comments from 
+William Jeffries
+ and more
+Sponsored by Forge of Empires
+Can you solve this equation in under 20 seconds?
+If so, you are likely to be in the top 5% of players in this award-winning strategic city building game.
+Related Questions
+More Answers Below
+Can there be a non zero matrix whose square is zero matrix?
+What does it mean to square a matrix?
+How do you square a matrix?
+Profile photo for Jonas Renan
+Jonas Renan
+, Math Student
+Answered March 11, 2014 · Upvoted by 
+Vinay Madhusudanan
+, Ph.D student in Mathematics from Manipal Institute of Technology; Mathematics lecturer at Manipal Institute o…
+Originally Answered: How do I prove that if a matrix squared equals itself, its determinant equals either 1 or 0?
+Lets assume detM is not zero, Therefore M is invertible so that M^2 = M => M = Id and detM=1
+
+So, the only two possibilities are detM=0 or detM=1
+
+4.1K viewsView 4 upvotes
+1 comment from 
+Tom McNamara
+Profile photo for Ted Hopp
+Ted Hopp
+, Software developer
+Answered March 11, 2014 · Upvoted by 
+Ron Lessnick
+, BSEE and MS Electrical Engineering & Mathematics, City College of New York (1965)
+Originally Answered: How do I prove that if a matrix squared equals itself, its determinant equals either 1 or 0?
+It's an established theorem (see Determinant of Matrix Product at ProofWiki, for example) that if A and B are square matrices, then det(AB)=det(A)det(B). So if A=B=AB, then we have det(A)=det(A)2. The only solutions to x=x2 are 0 and 1.
+
+5.2K viewsView 4 upvotes
+Profile photo for Amha Kindu
+
+4 answers collapsed (Why?)
+Related Questions
+Can there be a non zero matrix whose square is zero matrix?
+What does it mean to square a matrix?
+How do you square a matrix?
+When square of any matrix is zero then is it necessary that it is null matrix?
+For any non-zero matrix A, is ATA always invertible? If so, why?
+I multiply a matrix by itself repeatedly. As I am increasing the power, I want all of its elements to oscillate in a certain range (not converge to a number nor diverge into infinity). What are the properties of such a matrix? How do I construct it?
+What is the value of zero power of a matrix?
+When is the product of two non-zero matrices equal to a zero matrix?
+Why is the determinant of a zero matrix of size n equal to 1?
+What are linearly independent vectors?
+How do I prove that (AB)T=BTAT for matrices A,B?
+What is special about the matrices AAT and ATA? Why do they show up in things like least squares and SVD? I would like an intuitive or geometric interpretation of why these matrices and their eigenvalues and eigenvectors accomplish what they do.
+Is it possible for a matrix to equal its own inverse?
+What is the dimension of a vector space spanned by (1, 1, -2), (1, 2, -3), (0, 1, -1)?
+What is the general argument for why the determinant of a matrix is equal to the determinant of its transpose?
+Related Questions
+Can there be a non zero matrix whose square is zero matrix?
+What does it mean to square a matrix?
+How do you square a matrix?
+When square of any matrix is zero then is it necessary that it is null matrix?
+For any non-zero matrix A, is ATA always invertible? If so, why?
+I multiply a matrix by itself repeatedly. As I am increasing the power, I want all of its elements to oscillate in a certain range (not converge to a number nor diverge into infinity). What are the properties of such a matrix? How do I construct it?
+Ask question
+
+
+No messages
+Connect with others on Quora by beginning a new conversation.

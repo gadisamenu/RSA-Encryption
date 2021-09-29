@@ -1,18 +1,58 @@
+from Rsa import *
 
-import Rsa
+print('************** 1024 bit RSA Encryption for Text files only **************\n')
 
-#Removes the tedious generation of new prime numbers/keys everytime the program runs and Enables the generation of new keys at the user's will
+command = input("Enter: \n 'e'-to encrypt a file\n 'd'-to decrypt a file\n 'n' -to generate new keys\n 'q'-to quit\n").lower()
 
-secret = Rsa.Rsa()
-message = input("Enter the message you want to encrypt: ").lower()
-command = input("Do you want to generate new keys(Y/N)?: ").lower()
-if command == 'y':
-  secret.generateKeys()
-elif command == 'n':
-  secret.initialize()
-else:
-  print("Invalid command!")
+if not Rsa.initialize():
+    exit(1)
+    
+if command == 'e':
   
-encrypted_message = secret.encrypt(message)
-decrypted_message = secret.decrypt(encrypted_message)
-print(decrypted_message)
+  file_path =  input("Please Enter the filename or directory of the file: ")
+  try:
+    file = open(file_path,'r')
+    message = file.read()
+    if message == '':
+      raise EmptyFile
+    cipherText = Rsa.encrypt(message)
+    file.close()
+    secure_file = open('Encrypted_Files/'+file_path,'w')
+    secure_file.write(cipherText)
+    secure_file.close()
+  except FileNotFoundError as fnot:
+    print("Could not find the file specified! ",fnot)
+  except TypeError as wrongtype:
+    print("Only character streams are allowed! ",wrongtype)
+  except EmptyFile:
+    print("The file '"+file.name+"' is empty")
+    
+elif command == 'd':
+  Rsa.initialize()
+  file_path =  input("Please Enter the full directory of the file: ")
+  try:
+    file = open(file_path,'r')
+    cipherText = file.read()
+    file.close()
+    message = Rsa.decrypt(cipherText)
+    index = file_path.rfind('/')
+    file_name = file_path[index+1:]
+
+    new_file = open('Decrypted_Files/'+file_name,'w')
+    new_file.write(message)
+    new_file.close()
+  except FileNotFoundError as fnot:
+    print(fnot)
+  except TypeError as wrongtype:
+    print(wrongtype)
+  except InvalidEncryptionFormat:
+    print('This file is not Encrypted by this application!')
+  except KeyMisMatch:
+    print("Wrong public and private key pairs!")
+
+elif command == 'n':
+  Rsa.generateNewKey()
+elif command == 'q':
+  exit(0)
+else:
+  print('Invalid command!\n')
